@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: todo-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - todo-network
+
+  user-service:
+    build: ./user-service
+    container_name: todo-user-service
+    ports:
+      - "${USER_SERVICE_PORT}:3001"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+    depends_on:
+      - postgres
+    networks:
+      - todo-network
+    volumes:
+      - ./user-service:/app
+      - /app/node_modules
+
+  todo-service:
+    build: ./todo-service
+    container_name: todo-todo-service
+    ports:
+      - "${TODO_SERVICE_PORT}:3002"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+      - user-service
+    networks:
+      - todo-network
+    volumes:
+      - ./todo-service:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./frontend
+    container_name: todo-frontend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      - USER_SERVICE_URL=http://user-service:3001
+      - TODO_SERVICE_URL=http://todo-service:3002
+    depends_on:
+      - user-service
+      - todo-service
+    networks:
+      - todo-network
+
+volumes:
+  postgres_data:
+
+networks:
+  todo-network:
+    driver: bridge
