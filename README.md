@@ -19,7 +19,7 @@ This application consists of three main services:
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repository-url>
+git clone <https://github.com/mtauqeer248/Todo-app-Micro.git>
 cd todo-app
 ```
 
