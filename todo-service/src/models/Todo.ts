@@ -63,7 +63,7 @@ export class TodoModel {
   static async delete(id: number): Promise<boolean> {
     const query = 'DELETE FROM todos WHERE id = $1';
     const result = await pool.query(query, [id]);
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   static async findByIdAndUser(id: number, userUuid: string): Promise<Todo | null> {

@@ -10,7 +10,7 @@ const updateTodoSchema = Joi.object({
   title: Joi.string().min(1).max(255),
   description: Joi.string().allow('').max(1000),
   completed: Joi.boolean()
-}).min(1); // At least one field must be present
+}).min(1);
 
 export const validateCreateTodo = (req: Request, res: Response, next: NextFunction) => {
   const { error } = createTodoSchema.validate(req.body);

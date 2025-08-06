@@ -4,6 +4,8 @@ services:
   postgres:
     image: postgres:15
     container_name: todo-postgres
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -19,17 +21,19 @@ services:
   user-service:
     build: ./user-service
     container_name: todo-user-service
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
     ports:
       - "${USER_SERVICE_PORT}:3001"
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
     depends_on:
       - postgres
     networks:
@@ -41,16 +45,18 @@ services:
   todo-service:
     build: ./todo-service
     container_name: todo-todo-service
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "${TODO_SERVICE_PORT}:3002"
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - JWT_SECRET=${JWT_SECRET}
     depends_on:
       - postgres
       - user-service
@@ -63,11 +69,13 @@ services:
   frontend:
     build: ./frontend
     container_name: todo-frontend
+    env_file:
+      - .env
+    environment:
+      USER_SERVICE_URL: http://user-service:3001
+      TODO_SERVICE_URL: http://todo-service:3002
     ports:
       - "${FRONTEND_PORT}:3000"
-    environment:
-      - USER_SERVICE_URL=http://user-service:3001
-      - TODO_SERVICE_URL=http://todo-service:3002
     depends_on:
       - user-service
       - todo-service

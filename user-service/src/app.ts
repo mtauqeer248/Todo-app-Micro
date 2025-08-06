@@ -1,39 +1,34 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import userRoutes from './routes/userRoutes';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
 
+import userRoutes from "./routes/userRoutes";
+import dotenv from "dotenv";
 const app = express();
 
-// Security middleware
+dotenv.config();
+
 app.use(helmet());
 app.use(cors());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use(limiter);
+app.use(express.json());
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use("/api/users", userRoutes);
 
-// Routes
-app.use('/api/users', userRoutes);
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'User service is running!' });
+app.get("/health", (req, res) => {
+  res.json({ status: "User service is running!" });
 });
 
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    console.error(err.stack);
+    res.status(500).json({ error: "Something went wrong!" });
+  }
+);
 
 export default app;
