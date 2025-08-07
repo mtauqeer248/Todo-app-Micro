@@ -2,17 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
-
 COPY . .
 
-
-RUN npm run build
-
-
-RUN npm prune --production
+RUN npm install && npm run build && npm prune --production
 
 EXPOSE 3002
-
 CMD ["npm", "start"]

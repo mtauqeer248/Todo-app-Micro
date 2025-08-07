@@ -19,13 +19,14 @@ services:
       - todo-network
 
   user-service:
-    build: ./user-service
+    build:
+      context: ./user-service
     container_name: todo-user-service
     env_file:
       - .env
     environment:
       NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: postgres
       DB_PORT: ${DB_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -38,18 +39,16 @@ services:
       - postgres
     networks:
       - todo-network
-    volumes:
-      - ./user-service:/app
-      - /app/node_modules
 
   todo-service:
-    build: ./todo-service
+    build:
+      context: ./todo-service
     container_name: todo-todo-service
     env_file:
       - .env
     environment:
       NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: postgres
       DB_PORT: ${DB_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -62,12 +61,10 @@ services:
       - user-service
     networks:
       - todo-network
-    volumes:
-      - ./todo-service:/app
-      - /app/node_modules
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     container_name: todo-frontend
     env_file:
       - .env
