@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(authenticateToken);
 
-router.get('/api/:id',getTodos);
+router.get('/', getTodos);;
 router.post('/', validateCreateTodo,createTodo);
 router.put('/:id', validateTodoId, validateUpdateTodo,updateTodo);
 router.delete('/:id', validateTodoId,deleteTodo);

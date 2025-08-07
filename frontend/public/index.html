@@ -1,67 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todo App</title>
-    <link rel="stylesheet" href="/src/styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <h1>Todo Application</h1>
-        
-        <!-- Auth Section -->
-        <div id="auth-section">
-            <div class="auth-forms">
-                <div class="form-container">
-                    <h2>Login</h2>
-                    <form id="login-form">
-                        <input type="email" id="login-email" placeholder="Email" required>
-                        <input type="password" id="login-password" placeholder="Password" required>
-                        <button type="submit">Login</button>
-                    </form>
-                </div>
-                
-                <div class="form-container">
-                    <h2>Register</h2>
-                    <form id="register-form">
-                        <input type="email" id="register-email" placeholder="Email" required>
-                        <input type="password" id="register-password" placeholder="Password (min 6 chars)" required>
-                        <button type="submit">Register</button>
-                    </form>
-                </div>
-            </div>
+      <h1>Todo Application</h1>
+
+      
+      <div id="auth-section">
+        <div class="auth-forms">
+          <div class="form-container">
+            <h2>Login</h2>
+            <form id="login-form">
+              <input
+                type="email"
+                id="login-email"
+                placeholder="Email"
+                required
+              />
+              <input
+                type="password"
+                id="login-password"
+                placeholder="Password"
+                required
+              />
+              <div id="login-error" class="form-error"></div>
+              <button type="submit">Login</button>
+            </form>
+          </div>
+
+          <div class="form-container">
+            <h2>Register</h2>
+            <form id="register-form">
+              <input
+                type="email"
+                id="register-email"
+                placeholder="Email"
+                required
+              />
+              <input
+                type="password"
+                id="register-password"
+                placeholder="Password (min 6 chars)"
+                required
+              />
+              <div id="register-error" class="form-error"></div>
+              <button type="submit">Register</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      
+      <div id="todo-section" style="display: none">
+        <div class="user-info">
+          <span id="user-email"></span>
+          <button id="logout-btn">Logout</button>
         </div>
 
-        <!-- Todo Section -->
-        <div id="todo-section" style="display: none;">
-            <div class="user-info">
-                <span id="user-email"></span>
-                <button id="logout-btn">Logout</button>
-            </div>
-            
-            <div class="todo-form">
-                <h2>Add New Todo</h2>
-                <form id="todo-form">
-                    <input type="text" id="todo-title" placeholder="Todo title" required>
-                    <textarea id="todo-description" placeholder="Description (optional)"></textarea>
-                    <button type="submit">Add Todo</button>
-                </form>
-            </div>
-            
-            <div class="todo-list">
-                <h2>Your Todos</h2>
-                <div id="todos-container">
-                    <!-- Todos will be loaded here -->
-                </div>
-            </div>
-        </div>
         
-        <div id="message" class="message"></div>
+        <div class="todo-form">
+          <h2>Add New Todo</h2>
+          <form id="todo-form">
+            <input
+              type="text"
+              id="todo-title"
+              class="input"
+              placeholder="Todo title"
+              required
+            />
+            <div id="title-error" class="form-error"></div>
+
+            <textarea
+              id="todo-description"
+              class="textarea"
+              placeholder="Description (optional)"
+            ></textarea>
+            <div id="desc-error" class="form-error"></div>
+
+            <button type="submit" class="add-btn">Add Todo</button>
+            <div id="todo-success" class="form-success"></div>
+          </form>
+        </div>
+
+        <div class="todo-list">
+          <h2>Your Todos</h2>
+          <div id="todos-container" class="todos-container"></div>
+        </div>
+      </div>
+
+      <div id="message" class="message"></div>
+
+     
     </div>
 
     <script src="/src/auth.js"></script>
     <script src="/src/todo.js"></script>
     <script src="/src/index.js"></script>
-</body>
+    <script src="/src/modal.js"></script>
+  </body>
 </html>
