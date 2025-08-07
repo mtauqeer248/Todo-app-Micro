@@ -96,5 +96,5 @@ docker-compose logs todo-service
 
 Detailed API documentation is available in:
 - `api-docs/openapi.yaml` - OpenAPI 3.0 specification
-- `api-docs/postman-collection.json` - Postman collection
+
 
