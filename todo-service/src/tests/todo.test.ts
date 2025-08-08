@@ -1,5 +1,3 @@
-// tests/todo.test.ts
-
 import { Request, Response } from "express";
 import {
   getTodosByUser,

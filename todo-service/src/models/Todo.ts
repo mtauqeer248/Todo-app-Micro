@@ -1,29 +1,44 @@
-import { pool } from '../config/database';
-import { Todo, CreateTodoRequest, UpdateTodoRequest } from '../types/todo.types';
+import { pool } from "../config/database";
+import {
+  Todo,
+  CreateTodoRequest,
+  UpdateTodoRequest,
+} from "../types/todo.types";
 
 export async function findByUserUuid(userUuid: string): Promise<Todo[]> {
-  const query = 'SELECT * FROM todos WHERE user_uuid = $1 ORDER BY created_at DESC';
+  const query =
+    "SELECT * FROM todos WHERE user_uuid = $1 ORDER BY created_at DESC";
   const result = await pool.query(query, [userUuid]);
   return result.rows;
 }
 
 export async function findById(id: number): Promise<Todo | null> {
-  const query = 'SELECT * FROM todos WHERE id = $1';
+  const query = "SELECT * FROM todos WHERE id = $1";
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 }
 
-export async function create(userUuid: string, todoData: CreateTodoRequest): Promise<Todo> {
+export async function create(
+  userUuid: string,
+  todoData: CreateTodoRequest
+): Promise<Todo> {
   const query = `
     INSERT INTO todos (user_uuid, title, description)
     VALUES ($1, $2, $3)
     RETURNING *
   `;
-  const result = await pool.query(query, [userUuid, todoData.title, todoData.description || '']);
+  const result = await pool.query(query, [
+    userUuid,
+    todoData.title,
+    todoData.description || "",
+  ]);
   return result.rows[0];
 }
 
-export async function update(id: number, todoData: UpdateTodoRequest): Promise<Todo | null> {
+export async function update(
+  id: number,
+  todoData: UpdateTodoRequest
+): Promise<Todo | null> {
   const updates = [];
   const values = [];
   let paramCount = 1;
@@ -50,7 +65,7 @@ export async function update(id: number, todoData: UpdateTodoRequest): Promise<T
 
   const query = `
     UPDATE todos 
-    SET ${updates.join(', ')}
+    SET ${updates.join(", ")}
     WHERE id = $${paramCount}
     RETURNING *
   `;
@@ -60,13 +75,16 @@ export async function update(id: number, todoData: UpdateTodoRequest): Promise<T
 }
 
 export async function remove(id: number): Promise<boolean> {
-  const query = 'DELETE FROM todos WHERE id = $1';
+  const query = "DELETE FROM todos WHERE id = $1";
   const result = await pool.query(query, [id]);
   return (result.rowCount || 0) > 0;
 }
 
-export async function findByIdAndUser(id: number, userUuid: string): Promise<Todo | null> {
-  const query = 'SELECT * FROM todos WHERE id = $1 AND user_uuid = $2';
+export async function findByIdAndUser(
+  id: number,
+  userUuid: string
+): Promise<Todo | null> {
+  const query = "SELECT * FROM todos WHERE id = $1 AND user_uuid = $2";
   const result = await pool.query(query, [id, userUuid]);
   return result.rows[0] || null;
 }

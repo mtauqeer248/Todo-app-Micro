@@ -1,5 +1,5 @@
-import { pool } from '../config/database';
-import { User, CreateUserRequest } from '../types/user.types';
+import { pool } from "../config/database";
+import { User, CreateUserRequest } from "../types/user.types";
 
 export async function findUserByEmail(email: string): Promise<User | null> {
   const query = `

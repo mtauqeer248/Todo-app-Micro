@@ -2,7 +2,6 @@ import { Response } from "express";
 import { AuthenticatedRequest } from "../middleware/auth";
 import * as TodoService from "../services/todo_service";
 
-
 export const getTodos = async (
   req: AuthenticatedRequest,
   res: Response
@@ -16,7 +15,6 @@ export const getTodos = async (
   }
 };
 
-
 export const createTodo = async (
   req: AuthenticatedRequest,
   res: Response
@@ -29,8 +27,6 @@ export const createTodo = async (
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
 
 export const updateTodo = async (
   req: AuthenticatedRequest,

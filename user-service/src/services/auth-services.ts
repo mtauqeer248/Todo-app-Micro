@@ -11,8 +11,8 @@ export const registerUser = async ({ email, password }: CreateUserRequest) => {
 
   const hashed = await hash(password);
   const user = await createUser({
-      email,
-      password: hashed,
+    email,
+    password: hashed,
   });
 
   const { password: _, ...userResponse } = user;
