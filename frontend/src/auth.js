@@ -43,7 +43,6 @@ class AuthService {
         throw new Error(data.error || "Login failed");
       }
 
-      // Store token and user info
       this.token = data.token;
       this.user = data.user;
       localStorage.setItem("token", this.token);
@@ -75,5 +74,4 @@ class AuthService {
   }
 }
 
-// Create global auth service instance
 window.authService = new AuthService();

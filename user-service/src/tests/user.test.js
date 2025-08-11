@@ -1,77 +1,124 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const supertest_1 = __importDefault(require("supertest"));
-const app_1 = __importDefault(require("../app"));
-describe('User Service', () => {
-    describe('POST /api/users/register', () => {
-        it('should register a new user successfully', async () => {
-            const userData = {
-                email: 'test@example.com',
-                password: 'password123'
-            };
-            const response = await (0, supertest_1.default)(app_1.default)
-                .post('/api/users/register')
-                .send(userData)
-                .expect(201);
-            expect(response.body.message).toBe('User created successfully');
-            expect(response.body.user.email).toBe(userData.email);
-            expect(response.body.user.password_hash).toBeUndefined();
-        });
-        it('should return 400 for invalid email', async () => {
-            const userData = {
-                email: 'invalid-email',
-                password: 'password123'
-            };
-            const response = await (0, supertest_1.default)(app_1.default)
-                .post('/api/users/register')
-                .send(userData)
-                .expect(400);
-            expect(response.body.error).toContain('email');
-        });
-        it('should return 400 for short password', async () => {
-            const userData = {
-                email: 'test@example.com',
-                password: '123'
-            };
-            const response = await (0, supertest_1.default)(app_1.default)
-                .post('/api/users/register')
-                .send(userData)
-                .expect(400);
-            expect(response.body.error).toContain('password');
-        });
+
+jest.mock("../models/User", () => ({
+  createUser: jest.fn(),
+  findUserByEmail: jest.fn(),
+}));
+
+jest.mock("../utils/password", () => ({
+  hash: jest.fn(),
+  verify: jest.fn(),
+}));
+
+jest.mock("../utils/jwt", () => ({
+  generateToken: jest.fn(),
+}));
+
+
+const { createUser, findUserByEmail } = require("../models/User");
+const { hash, verify } = require("../utils/password");
+const { generateToken } = require("../utils/jwt");
+const UserService = require("../services/auth-services");
+
+describe("UserService - Test Suite", () => {
+  const mockUser = {
+    uuid: "uuid-123",
+    email: "test@example.com",
+    password: "hashedpassword123",
+  };
+
+  const mockPayload = {
+    email: "test@example.com",
+    password: "password123",
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    findUserByEmail.mockResolvedValue(null);
+
+    hash.mockResolvedValue("hashedpassword123");
+    generateToken.mockReturnValue("mocked-token");
+    verify.mockResolvedValue(true);
+    createUser.mockResolvedValue(mockUser);
+  });
+
+
+  describe("registerUser", () => {
+    test("should register a user successfully", async () => {
+      const result = await UserService.registerUser(mockPayload);
+
+      expect(findUserByEmail).toHaveBeenCalledWith(mockPayload.email);
+      expect(hash).toHaveBeenCalledWith(mockPayload.password);
+      expect(createUser).toHaveBeenCalledWith({
+        email: mockPayload.email,
+        password: "hashedpassword123",
+      });
+
+    
+      expect(result).toEqual({
+        uuid: mockUser.uuid,
+        email: mockUser.email,
+      });
     });
-    describe('POST /api/users/login', () => {
-        it('should login with valid credentials', async () => {
-            await (0, supertest_1.default)(app_1.default)
-                .post('/api/users/register')
-                .send({
-                email: 'login@example.com',
-                password: 'password123'
-            });
-            const response = await (0, supertest_1.default)(app_1.default)
-                .post('/api/users/login')
-                .send({
-                email: 'login@example.com',
-                password: 'password123'
-            })
-                .expect(200);
-            expect(response.body.message).toBe('Login successful');
-            expect(response.body.token).toBeDefined();
-            expect(response.body.user.email).toBe('login@example.com');
-        });
-        it('should return 401 for invalid credentials', async () => {
-            const response = await (0, supertest_1.default)(app_1.default)
-                .post('/api/users/login')
-                .send({
-                email: 'nonexistent@example.com',
-                password: 'wrongpassword'
-            })
-                .expect(401);
-            expect(response.body.error).toBe('Invalid credentials');
-        });
+
+    test("should throw an error if email is already in use", async () => {
+     
+      findUserByEmail.mockResolvedValue(mockUser);
+
+      await expect(UserService.registerUser(mockPayload)).rejects.toThrow(
+        "EMAIL_IN_USE"
+      );
     });
+
+    test("should throw an error if user creation fails", async () => {
+     
+      findUserByEmail.mockResolvedValue(null);
+      createUser.mockRejectedValue(new Error("Database error"));
+
+      await expect(UserService.registerUser(mockPayload)).rejects.toThrow(
+        "Database error"
+      );
+    });
+  });
+
+ 
+  describe("loginUser", () => {
+    test("should return a token and user on successful login", async () => {
+      findUserByEmail.mockResolvedValue(mockUser);
+      verify.mockResolvedValue(true);
+
+      const result = await UserService.loginUser(mockPayload);
+
+      expect(findUserByEmail).toHaveBeenCalledWith(mockPayload.email);
+      expect(verify).toHaveBeenCalledWith(mockPayload.password, mockUser.password);
+      expect(generateToken).toHaveBeenCalledWith({
+        uuid: mockUser.uuid,
+        email: mockUser.email,
+      });
+      expect(result).toEqual({
+        token: "mocked-token",
+        user: {
+          uuid: mockUser.uuid,
+          email: mockUser.email,
+        },
+      });
+    });
+
+    test("should throw an error for invalid credentials (user not found)", async () => {
+      findUserByEmail.mockResolvedValue(null);
+
+      await expect(UserService.loginUser(mockPayload)).rejects.toThrow(
+        "INVALID_CREDENTIALS"
+      );
+    });
+
+    test("should throw an error for invalid credentials (wrong password)", async () => {
+      findUserByEmail.mockResolvedValue(mockUser);
+      verify.mockResolvedValue(false);
+
+      await expect(UserService.loginUser(mockPayload)).rejects.toThrow(
+        "INVALID_CREDENTIALS"
+      );
+    });
+  });
 });
-//# sourceMappingURL=user.test.js.map

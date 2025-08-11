@@ -17,6 +17,11 @@ services:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - todo-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   user-service:
     build:
@@ -36,7 +41,8 @@ services:
     ports:
       - "${USER_SERVICE_PORT}:3001"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - todo-network
 
@@ -57,8 +63,10 @@ services:
     ports:
       - "${TODO_SERVICE_PORT}:3002"
     depends_on:
-      - postgres
-      - user-service
+      postgres:
+        condition: service_healthy
+      user-service:
+        condition: service_started
     networks:
       - todo-network
 
@@ -74,8 +82,10 @@ services:
     ports:
       - "${FRONTEND_PORT}:3000"
     depends_on:
-      - user-service
-      - todo-service
+      user-service:
+        condition: service_started
+      todo-service:
+        condition: service_started
     networks:
       - todo-network
 

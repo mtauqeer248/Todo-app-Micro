@@ -98,9 +98,34 @@
      
     </div>
 
+     <div id="edit-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Edit Todo</h3>
+            <form id="edit-form">
+                <input type="text" class="edit-input" id="edit-title" placeholder="Title" required>
+                <textarea id="edit-description" class="edit-text" placeholder="Description"></textarea>
+                <div class="modal-actions">
+                    <button type="submit">Save</button>
+                    <button type="button" id="edit-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this todo?</p>
+            <div class="modal-actions">
+                <button id="delete-confirm">Yes, Delete</button>
+                <button id="delete-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
     <script src="/src/auth.js"></script>
     <script src="/src/todo.js"></script>
     <script src="/src/index.js"></script>
-    <script src="/src/modal.js"></script>
   </body>
 </html>
