@@ -1,4 +1,4 @@
-// ✅ mock before requiring the controller
+
 const mockTodos = [
   { id: 1, title: "Test 1", description: "Desc 1", user_uuid: "user-123" },
   { id: 2, title: "Test 2", description: "Desc 2", user_uuid: "user-123" },
@@ -11,7 +11,6 @@ jest.mock("../services/todo_service", () => ({
   deleteUserTodo: jest.fn(),
 }));
 
-// Now require after mocks are set up
 const {
   getTodosByUser,
   createTodoForUser,
