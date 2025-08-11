@@ -27,6 +27,24 @@ cd todo-app
 ```bash
 cp .env.example .env
 # Edit .env file with your configurations
+# Database Configuration
+POSTGRES_USER=<your_postgres_username>
+POSTGRES_PASSWORD=<your_postgres_password>
+POSTGRES_DB=<your_postgres_database_name>
+DB_HOST=<your_database_host>
+DB_PORT=<your_database_port>
+
+# JWT Configuration
+JWT_SECRET=<your_jwt_secret_key>
+JWT_EXPIRES_IN=<jwt_token_expiration_time>
+
+# Services Ports
+USER_SERVICE_PORT=<user_service_port>
+TODO_SERVICE_PORT=<todo_service_port>
+FRONTEND_PORT=<frontend_port>
+
+# Node Environment
+NODE_ENV=<development_or_production>
 ```
 
 ### 3. Run with Docker
