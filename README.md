@@ -26,6 +26,7 @@ cd todo-app
 ### 2. Environment Setup
 ```bash
 cp .env.example .env
+
 # Database Configuration
 POSTGRES_USER=<your_postgres_username>
 POSTGRES_PASSWORD=<your_postgres_password>
